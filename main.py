@@ -3,6 +3,6 @@ import random
 
 random.seed(42)
 
-g = Grid(10, 10)
+g = Grid(60, 60)
 print(g)
 print(g.get_answers())

@@ -1,5 +1,6 @@
 import random
 from leetcode_word_search import Solution
+import pickle
 
 class Grid():
     def __init__(self, width, height):
@@ -50,7 +51,7 @@ class Grid():
                         words_database : str = "dico.txt"):
         
         with open(words_database, "r") as f:
-            list_of_words = tuple(w.strip() for w in f.readlines())
+            list_of_words = set(w.strip() for w in f.readlines())
             
         return Solution().findWords(grid, list_of_words)
         

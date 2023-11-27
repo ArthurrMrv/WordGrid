@@ -1,8 +1,9 @@
 from tqdm import tqdm
 import string
+import pickle
 
 class Solution:
-    list_found = []
+    list_found = set()
 
     def decomp_words(self, list_words) -> dict:
         """
@@ -32,7 +33,9 @@ class Solution:
                 continue
 
             if actual + board[y+j][x+i].lower() in words[actual[0]]:
-                self.list_found.append(actual + board[y+j][x+i].lower())
+                #self.list_found.append(actual + board[y+j][x+i].lower())
+                self.list_found.add(actual + board[y+j][x+i].lower())
+                
             
             if (len(actual) not in dict_words) or (actual not in dict_words[len(actual)]) or (board[y+j][x+i].lower() not in dict_words[len(actual)][actual]):
                 continue
@@ -56,15 +59,40 @@ class Solution:
                     ans = self.recc_search(board, words, dict_words, x, y, board[y][x].lower(), studied=((x, y)))
                     
         bar.close()
-        ans.sort()
         return ans
+    
+    def pickle_words(self, words, filename = "words.pckl"):
+        """
+        Save the words in a pickle file
+        """
+        with open(filename, "wb") as f:
+            pickle.dump(words, f)
+
+    def pickle_dict(self, dict_words, filename = "dict.pckl"):
+        """
+        Save the dictionary in a pickle file
+        """
+        with open(filename, "wb") as f:
+            pickle.dump(dict_words, f)
 
     def findWords(self, board : list, words : tuple):
         """
         Return a list of words matching between the input and the words in the grid
         """
-        
+        try:
+            with open("dict.pckl", "rb") as f:
+                dict_words = pickle.load(f)
+        except:
+            dict_words = self.decomp_words(words)
+            self.pickle_dict(dict_words)
+        try:
+            with open("words.pckl", "rb") as f:
+                words = pickle.load(f)
+        except:
+            words = {s : set(word for word in words if word[0] == s) for s in string.ascii_lowercase}
+            self.pickle_words(words)
+
         self.list_found.clear()
-        return set(self.search(board, 
-                               {s : tuple(word for word in words if word[0] == s) for s in string.ascii_lowercase}, 
-                               self.decomp_words(words)))
+        return self.search(board, 
+                            words, 
+                            dict_words)
