@@ -1,3 +1,6 @@
+from tqdm import tqdm
+import string
+
 class Solution:
     list_found = []
 
@@ -18,22 +21,23 @@ class Solution:
 
         return dico_decomp
 
-    def recc_search(self, board, words, dict_words, x, y, actual):
+    def recc_search(self, board, words, dict_words, x, y, actual, studied):
+        """
+        reccursive search of the words in the grid
+        """
         
-        for p in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+        for (i, j) in tuple((x, y) for x in range(-1, 2) for y in range(-1, 2) if (x, y) != (0, 0)):
 
-            if ((-1 < x+p[0] < len(board[0]))  and (-1 < y+p[1] < len(board))):
-                pass
-            else:
+            if not ((-1 < x+i < len(board[0]))  and (-1 < y+j < len(board))) or (x+i, y+j) in studied:
+                continue
+
+            if actual + board[y+j][x+i].lower() in words[actual[0]]:
+                self.list_found.append(actual + board[y+j][x+i].lower())
+            
+            if (len(actual) not in dict_words) or (actual not in dict_words[len(actual)]) or (board[y+j][x+i].lower() not in dict_words[len(actual)][actual]):
                 continue
             
-            if actual + board[y+p[1]][x+p[0]] in words:
-                self.list_found.append(actual + board[y+p[1]][x+p[0]])
-            
-            if (len(actual) not in dict_words) or (actual not in dict_words[len(actual)]) or (board[y+p[1]][x+p[0]] not in dict_words[len(actual)][actual]):
-                continue
-            
-            self.recc_search(board, words, dict_words, x+p[0], y+p[1], actual+board[y+p[1]][x+p[0]])
+            self.recc_search(board, words, dict_words, x+i, y+j, actual+board[y+j][x+i].lower(), studied + ((x+i, y+j),))
         return self.list_found.copy()
 
                 
@@ -42,17 +46,25 @@ class Solution:
         Loop through each cell and activate the reccursive search if necessary
         """
         ans = []
+        #initiate a bar variable to be a tqdm loading bar
+        bar = tqdm(total=len(board)*len(board[0]), desc="Searching words...", ascii=True)
+        
         for y in range(0, len(board)):
             for x in range(0, len(board)):
-                if board[y][x] in dict_words[0]['']:
-                    ans = self.recc_search(board, words, dict_words, x, y, board[y][x])
+                bar.update(1)
+                if board[y][x].lower() in dict_words[0]['']:
+                    ans = self.recc_search(board, words, dict_words, x, y, board[y][x].lower(), studied=((x, y)))
+                    
+        bar.close()
         ans.sort()
         return ans
 
-    def findWords(self, board: List[List[str]], words: List[str]) -> List[str]:
+    def findWords(self, board : list, words : tuple):
         """
         Return a list of words matching between the input and the words in the grid
         """
-        self.list_found.clear()
         
-        return self.search(board, words, self.decomp_words(words))
+        self.list_found.clear()
+        return set(self.search(board, 
+                               {s : tuple(word for word in words if word[0] == s) for s in string.ascii_lowercase}, 
+                               self.decomp_words(words)))
