@@ -16,12 +16,6 @@ class Grid():
             ans += "\n"
         return ans
 
-    def __getitem__(self, key):
-        return self.grid[key]
-
-    def __setitem__(self, key, value):
-        self.grid[key] = value
-
     def get_width(self):
         return self.width
 
@@ -39,40 +33,10 @@ class Grid():
     def get_cell(self, x, y):
         return self.grid[y][x]
 
-    def set_cell(self, x, y, value):
-        self.grid[y][x] = value
-
     def get_random_cell(self):
         x = random.randint(0, self.width - 1)
         y = random.randint(0, self.height - 1)
         return self.grid[y][x]
-
-    def get_random_empty_cell(self):
-        x = random.randint(0, self.width - 1)
-        y = random.randint(0, self.height - 1)
-        while self.grid[y][x] != 0:
-            x = random.randint(0, self.width - 1)
-            y = random.randint(0, self.height - 1)
-        return self.grid[y][x]
-
-    def get_random_cell_of_value(self, value):
-        x = random.randint(0, self.width - 1)
-        y = random.randint(0, self.height - 1)
-        while self.grid[y][x] != value:
-            x = random.randint(0, self.width - 1)
-            y = random.randint(0, self.height - 1)
-        return self.grid[y][x]
-
-    def get_random_empty_cell_of_value(self, value):
-        x = random.randint(0, self.width - 1)
-        y = random.randint(0, self.height - 1)
-        while self.grid[y][x] != 0 and self.grid[y][x] != value:
-            x = random.randint(0, self.width - 1)
-            y = random.randint(0, self.height - 1)
-        return self.grid[y][x]
-
-    def get_random_cell_of_values(self, values):
-        x = random.randint(0, self.width - 1)
     
     @staticmethod
     def get_random_grid(width : int,
