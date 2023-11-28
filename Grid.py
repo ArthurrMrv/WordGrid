@@ -54,4 +54,3 @@ class Grid():
             list_of_words = set(w.strip() for w in f.readlines())
             
         return Solution().findWords(grid, list_of_words)
-        
